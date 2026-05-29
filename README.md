@@ -115,7 +115,7 @@ Run automatically at 8am every weekday:
 ```bash
 crontab -e
 # Add:
-0 8 * * 1-5 cd /path/to/standup-bot && .venv/bin/python standup.py
+0 6 * * 1-5 cd /path/to/standup-bot && .venv/bin/python standup.py
 ```
 
 ---

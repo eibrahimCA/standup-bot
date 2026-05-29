@@ -11,13 +11,8 @@ class GitHubClient:
         self.org = os.environ["GITHUB_ORG"]
         self.repos = [r.strip() for r in os.environ["GITHUB_REPOS"].split(",")]
 
-    def get_yesterday_prs(self):
-        """Return {author_login: [pr_data, ...]} for PRs merged yesterday."""
-        tz = timezone.utc
-        now = datetime.now(tz)
-        yesterday_start = (now - timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
-        yesterday_end = yesterday_start.replace(hour=23, minute=59, second=59)
-
+    def get_prs_since(self, since, until):
+        """Return {author_login: [pr_data, ...]} for PRs merged between since and until (UTC-aware datetimes)."""
         prs_by_author = {}
 
         for repo_name in self.repos:
@@ -31,9 +26,9 @@ class GitHubClient:
             for pr in repo.get_pulls(state="closed", sort="updated", direction="desc"):
                 if pr.merged_at is None:
                     continue
-                if pr.merged_at < yesterday_start:
+                if pr.merged_at < since:
                     break
-                if pr.merged_at > yesterday_end:
+                if pr.merged_at > until:
                     continue
 
                 author = pr.user.login
